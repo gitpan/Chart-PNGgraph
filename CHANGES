@@ -1,3 +1,7 @@
+Mon January 3 2000 by sbonds@agora.rdrop.com
+- Chart::PNGgraph version 1.15
+- minor bugfix-- 'make test' would fail due to a missing file
+
 Mon December 20 1999 by sbonds@agora.rdrop.com
 - Chart::PNGgraph version 1.14
 - Bugfixes only-- better TrueType support coming soon

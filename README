@@ -1,4 +1,4 @@
-This is PNGgraph 1.13, a package to generate PNG charts, using Lincoln
+This is PNGgraph 1.15, a package to generate PNG charts, using Lincoln
 Stein's GD.pm.  This is a direct port of GIFgraph 1.10 by Martien Verbruggen.
 
 INSTALLATION

@@ -19,7 +19,7 @@
 #		Chart::PNGgraph::pie
 #		Chart::PNGgraph::mixed
 #
-# $Id: PNGgraph.pm,v 1.1.1.1.2.7.2.3 1999/12/20 19:37:15 sbonds Exp $
+# $Id: PNGgraph.pm,v 1.1.1.1.2.7.2.4 2000/01/03 20:29:00 sbonds Exp $
 #
 #==========================================================================
 
@@ -41,11 +41,11 @@ use GD;
 package Chart::PNGgraph;
 
 $Chart::PNGgraph::prog_name    = 'Chart::PNGgraph.pm';
-$Chart::PNGgraph::prog_rcs_rev = q{$Revision: 1.1.1.1.2.7.2.3 $};
+$Chart::PNGgraph::prog_rcs_rev = q{$Revision: 1.1.1.1.2.7.2.4 $};
 $Chart::PNGgraph::prog_version = 
 	($Chart::PNGgraph::prog_rcs_rev =~ /\s+(\d*\.\d*)/) ? $1 : "0.0";
 
-$Chart::PNGgraph::VERSION = '1.14';
+$Chart::PNGgraph::VERSION = '1.15';
 
 # Some tools and utils
 use Chart::PNGgraph::colour qw(:colours);

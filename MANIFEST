@@ -2,6 +2,7 @@ MANIFEST
 BUGS
 CHANGES
 README
+TODO
 Makefile.PL
 lib/Chart/PNGgraph.pm
 lib/Chart/PNGgraph/area.pm

@@ -5,7 +5,7 @@
 #	Name:
 #		Chart::PNGgraph::axestype.pm
 #
-# $Id: axestype.pm,v 1.1.1.1.2.5 1999/10/12 04:21:07 sbonds Exp $
+# $Id: axestype.pm,v 1.1.1.1.2.5.2.4 1999/12/20 19:42:51 sbonds Exp $
 #
 #==========================================================================
 
@@ -931,11 +931,22 @@ my %Defaults = (
 			{
 				next if ($n != 1) && ($_ < $range/$n); # $step too small
 
-				my $nice_min   = $_ * int($min/$_);
-				$nice_min  -= $_ if ($nice_min > $min);
-				my $nice_max   = ($n == 1) 
-					? $_ * int($max/$_ + 1) 
-					: $nice_min + $n * $_;
+				my ($nice_min, $nice_max);
+
+				if ($_ == 0) {
+				  $nice_min = 0;
+				  # Somewhat arbitrary.  This is a kluge to
+				  # get around a divide-by-zero error.
+				  $nice_max = 1;
+				}
+				else {
+				  $nice_min   = $_ * int($min/$_);
+				  $nice_min  -= $_ if ($nice_min > $min);
+				  $nice_max   = ($n == 1) 
+				    ? $_ * int($max/$_ + 1) 
+				      : $nice_min + $n * $_;
+				}
+
 				my $nice_range = $nice_max - $nice_min;
 
 				next if ($nice_max < $max);	# $nice_min too small

@@ -11,13 +11,18 @@ use Chart::PNGgraph::points;
 # The selection I made (20thcent.ttf) comes from Ray Larabie.  See the
 # 20thcent_Read_Me.txt for details about it.
 
-$::WRITE = 0;
+$::WRITE = 1;
 require 'ff.pl';
 
 my @data = ( 
 	["1st","2nd","3rd","4th","5th","6th","7th", "8th", "9th"],
 	[    3,    7,    8,    2,    4,  1.5,    2,     5,     1],
 	[    1,    2,    5,    6,    3,  1.5,    1,     3,     4],
+);
+
+my @zero_data = (
+	["1st","2nd","3rd","4th","5th","6th","7th", "8th", "9th"],
+	[    0,    0,    0,    0,    0,    0,    0,     0,     0],
 );
 
 my @opts = (
@@ -51,12 +56,21 @@ my @opts = (
 		'y_label_skip' 	=> 2,
 		'x_ticks'		=> 1,
 	},
+	{
+		'x_label' 		=> 'X Label',
+		'y_label' 		=> 'Y label',
+		'title' 		=> 'Default size (test all zeroes)',
+		'y_max_value' 	=> 10,
+		'y_tick_number'	=> 5,
+		'y_label_skip' 	=> 2,
+		'x_ticks'		=> 1,
+	},
 );
 
-print "1..3\n";
+print "1..4\n";
 ($::WARN) && warn "\n";
 
-foreach my $i (1..3)
+foreach my $i (1..4)
 {
 	my $fn = 't/base' . $i . '.png';
 
@@ -97,6 +111,10 @@ foreach my $i (1..3)
 		     );
 	  $g->set_title_TTF(\%Font);
 	}	  
+	elsif ($i == 4) {
+	   $g = new Chart::PNGgraph::points();
+	   @data = @zero_data;
+	}	
 	my $Image = $g->plot( \@data );
 
 	print (($checkImage eq $Image ? "ok" : "not ok"). " $i\n");

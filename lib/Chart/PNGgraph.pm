@@ -19,7 +19,7 @@
 #		Chart::PNGgraph::pie
 #		Chart::PNGgraph::mixed
 #
-# $Id: PNGgraph.pm,v 1.1.1.1.2.7 1999/10/22 00:38:05 sbonds Exp $
+# $Id: PNGgraph.pm,v 1.1.1.1.2.7.2.3 1999/12/20 19:37:15 sbonds Exp $
 #
 #==========================================================================
 
@@ -41,11 +41,11 @@ use GD;
 package Chart::PNGgraph;
 
 $Chart::PNGgraph::prog_name    = 'Chart::PNGgraph.pm';
-$Chart::PNGgraph::prog_rcs_rev = q{$Revision: 1.1.1.1.2.7 $};
+$Chart::PNGgraph::prog_rcs_rev = q{$Revision: 1.1.1.1.2.7.2.3 $};
 $Chart::PNGgraph::prog_version = 
 	($Chart::PNGgraph::prog_rcs_rev =~ /\s+(\d*\.\d*)/) ? $1 : "0.0";
 
-$Chart::PNGgraph::VERSION = '1.13';
+$Chart::PNGgraph::VERSION = '1.14';
 
 # Some tools and utils
 use Chart::PNGgraph::colour qw(:colours);
@@ -681,7 +681,11 @@ $my_graph->set_title_TTF( \%Font );
 
 =item plot( I<\@data> )
 
-Plot the chart, and return the PNG data.
+Plot the chart, and return the raw PNG data as a scalar.
+
+Example:
+
+$Image = $my_graph->plot(\@data);
 
 =item plot_to_png( F<filename>, I<\@data> )
 

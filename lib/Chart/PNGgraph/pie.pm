@@ -5,7 +5,7 @@
 #	Name:
 #		Chart::PNGgraph::pie.pm
 #
-# $Id: pie.pm,v 1.1.1.1.2.2 1999/10/07 21:04:01 sbonds Exp $
+# $Id: pie.pm,v 1.1.1.1.2.3 1999/10/22 00:04:01 sbonds Exp $
 #
 #==========================================================================
 
@@ -37,6 +37,7 @@ my %Defaults = (
 	# 0 is at the front/bottom
  
 	start_angle => 0,
+
 );
 
 {
@@ -77,6 +78,11 @@ my %Defaults = (
 			vfh => $self->{vf}->height,
 		);
 	}
+
+        sub debug($) {
+	    my $self = shift;
+	    $self->{_debug} = shift || 1;
+	}
  
 	# Inherit defaults() from Chart::PNGgraph
  
@@ -94,6 +100,7 @@ my %Defaults = (
 			$self->set( $key => $Defaults{$key} );
 		}
  
+		$self->{_debug} = 0;
 		$self->set( pie_height => _round(0.1 * $self->{pngy}) );
  
 		$self->set_value_font(GD::gdTinyFont);
@@ -230,6 +237,16 @@ my %Defaults = (
 			my $dc = $s->set_clr_uniq( $g, $s->pick_data_clr($i) );
 
 			# Set the angles of the pie slice
+			# Angle 0 faces down, positive angles are clockwise 
+			# from there.
+			#         ---
+			#        /   \
+			#        |    |
+			#        \ | /
+			#         ---
+			#          0
+			# $pa/$pb include the start_angle (so if start_angle
+			# is 90, there will be no pa/pb < 90.
 			my $pa = $pb;
 			$pb += 360 * $data->[1][$i]/$total;
 
@@ -255,17 +272,37 @@ my %Defaults = (
 					$s->{xc}, $s->{yc}, $s->{h}/$s->{w}
 				);
 
+			if ( $s->{_debug} ) {
+			  print STDERR "Filling from ($xe,$ye) with $dc\n";
+			}
 			$g->fillToBorder($xe, $ye, $ac, $dc);
 
 			$s->put_label($g, $xe, $ye, $data->[0][$i]);
 
 			# If it's 3d, colour the front ones as well
+			# if one slice is very large (>180 deg) then
+			# we will need to fill it twice.  sbonds.
 			if ( $s->{'3d'} ) 
 			{
-				my ($xe, $ye) = $s->_get_pie_front_coords($pa, $pb);
 
-				$g->fillToBorder($xe, $ye + $s->{pie_height}/2, $ac, $dc)
-					if (defined($xe) && defined($ye));
+			  if ( $s->{_debug} ) {
+			    print STDERR "Checking whether to fill between $pa and $pb degrees \n";
+			  }
+				
+			  my $fills = $s->_get_pie_front_coords($pa, $pb);
+
+			  my ($xe, $ye);
+
+			  if (defined($fills->[0])) {
+			    my $fill_num;
+			    foreach  $fill_num (0..$#{ $fills }) {
+			      ($xe, $ye) = @{ $fills->[$fill_num] };
+			      if ( $s->{_debug} > 4 ) {
+				print STDERR "Filling slice $fill_num front from ($xe,$ye) with $dc\n";
+			      }
+			      $g->fillToBorder($xe, $ye + $s->{pie_height}/2, $ac, $dc);
+			    }
+			  }
 			}
 		}
 	} #Chart::PNGgraph::pie::draw_data
@@ -273,15 +310,50 @@ my %Defaults = (
 	sub _get_pie_front_coords($$) # (angle 1, angle 2)
 	{
 		my $s = shift;
-		my $pa = level_angle(shift);
-		my $pb = level_angle(shift);
+		my $unlevelled_pa = shift;
+		my $unlevelled_pb = shift;
+		my $pa = level_angle($unlevelled_pa);
+		my $pb = level_angle($unlevelled_pb);
+		my @fills = ();
+		my ($x, $y);
+
+		if ($s->{_debug} > 5) {
+		  print "Leveling \$pa: $unlevelled_pa --> $pa\n";
+		  print "Leveling \$pb: $unlevelled_pb --> $pb\n";
+		}
 
 		if (in_front($pa))
 		{
+		  if ( $s->{_debug} > 4 ) {
+		    print STDERR "Angle $pa is in front\n";
+		  }
+
 			if (in_front($pb))
 			{
-				# both in front
-				# don't do anything
+			  if ( $s->{_debug} > 4 ) {
+			    print STDERR "Angle $pb is also in front\n";
+			  }
+			  
+			  # both in front
+			  # don't do anything
+			  # Ah, but if this wraps all the way around the back
+			  # then both pieces of the front need to be filled.
+			  # sbonds.
+			  if ($pa > $pb ) {
+			    if ( $s->{_debug} > 5 ) {
+			      print STDERR "Wraparound filling at r=" . $s->{w}/2 . " " . ($pa+$ANGLE_OFFSET)/2 . " degrees\n";
+			    }
+
+			    ($x, $y) = 
+			      cartesian(
+					$s->{w}/2, ($pa+$ANGLE_OFFSET)/2,
+					$s->{xc}, $s->{yc}, $s->{h}/$s->{w}
+				       );
+
+			    push @fills, [ $x, $y ];
+			    # Reset $pa to the right edge of the front arc.
+			    $pa = level_angle(0-$ANGLE_OFFSET);
+			  }
 			}
 			else
 			{
@@ -291,6 +363,9 @@ my %Defaults = (
 		}
 		else
 		{
+		  if ( $s->{_debug} > 4 ) {
+		    print STDERR "Angle $pa is NOT in front\n";
+		  }
 			if (in_front($pb))
 			{
 				# start in back, end in front
@@ -298,18 +373,27 @@ my %Defaults = (
 			}
 			else
 			{
+			  if ( $s->{_debug} > 4 ) {
+			    print STDERR "Angle $pb is NOT in front either\n";
+			  }
 				# both in back
 				return;
 			}
 		}
 
-		my ($x, $y) = 
+		if ( $s->{_debug} > 5 ) {
+		  print STDERR "Filling at r=" . $s->{w}/2 . " " . ($pa+$pb)/2 . " degrees\n";
+		}
+
+		($x, $y) = 
 			cartesian(
 				$s->{w}/2, ($pa+$pb)/2,
 				$s->{xc}, $s->{yc}, $s->{h}/$s->{w}
 			);
 
-		return ($x, $y);
+		push @fills, [ $x, $y ];
+
+		return \@fills;
 	}
  
 	# return true if this angle is on the front of the pie

@@ -1,4 +1,4 @@
-This is PNGgraph 1.10, a package to generate PNG charts, using Lincoln
+This is PNGgraph 1.13, a package to generate PNG charts, using Lincoln
 Stein's GD.pm.  This is a direct port of GIFgraph 1.10 by Martien Verbruggen.
 
 INSTALLATION
@@ -54,6 +54,12 @@ PNG PORT
 
 Steve Bonds
 sbonds@agora.rdrop.com
+
+MOST IMPORTANT CHANGES SINCE VERSION 1.10
+
+- Namespace change from GIFgraph --> Chart::PNGgraph
+- No longer generates GIF format images due to Unisys LZW patent
+- Supports TrueType fonts
 
 MOST IMPORTANT CHANGES SINCE VERSION 1.04
 

@@ -5,6 +5,12 @@ use Chart::PNGgraph::points;
 # Ideally I'd like to check other functions like changing colors, borders,
 # text styles, etc.  Really give ol' GD a workout.  sbonds.
 
+# Thanks go to http://fonts.linuxpower.org/ for leading me to a source
+# of freely available TrueType fonts.
+
+# The selection I made (20thcent.ttf) comes from Ray Larabie.  See the
+# 20thcent_Read_Me.txt for details about it.
+
 $::WRITE = 0;
 require 'ff.pl';
 
@@ -36,12 +42,21 @@ my @opts = (
 	        'pngx'          => 800,
                 'pngy'          => 600,
 	},
+	{
+		'x_label' 		=> 'X Label',
+		'y_label' 		=> 'Y label',
+		'title' 		=> 'Default size (test TrueType)',
+		'y_max_value' 	=> 10,
+		'y_tick_number'	=> 5,
+		'y_label_skip' 	=> 2,
+		'x_ticks'		=> 1,
+	},
 );
 
-print "1..2\n";
+print "1..3\n";
 ($::WARN) && warn "\n";
 
-foreach my $i (1..2)
+foreach my $i (1..3)
 {
 	my $fn = 't/base' . $i . '.png';
 
@@ -67,6 +82,20 @@ foreach my $i (1..2)
 	    next;
 	  }
 	  $g->set_title_font(GD::gdTinyFont);
+	}	  
+	elsif ($i == 3) {
+	  $g = new Chart::PNGgraph::points( );
+	  unless($set_return = $g->set( %$opts )) {
+	    print STDERR "set returned '$set_return'\n";
+	    print "not ok $i\n";
+	    next;
+	  }
+	  my %Font = (
+		      fontname => "t/20thcent.ttf",
+		      size => 10,
+		      angle => 0.05,
+		     );
+	  $g->set_title_TTF(\%Font);
 	}	  
 	my $Image = $g->plot( \@data );
 

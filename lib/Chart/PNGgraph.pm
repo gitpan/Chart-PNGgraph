@@ -19,7 +19,7 @@
 #		Chart::PNGgraph::pie
 #		Chart::PNGgraph::mixed
 #
-# $Id: PNGgraph.pm,v 1.1.1.1.2.4 1999/10/07 21:05:50 sbonds Exp $
+# $Id: PNGgraph.pm,v 1.1.1.1.2.7 1999/10/22 00:38:05 sbonds Exp $
 #
 #==========================================================================
 
@@ -41,11 +41,11 @@ use GD;
 package Chart::PNGgraph;
 
 $Chart::PNGgraph::prog_name    = 'Chart::PNGgraph.pm';
-$Chart::PNGgraph::prog_rcs_rev = q{$Revision: 1.1.1.1.2.4 $};
+$Chart::PNGgraph::prog_rcs_rev = q{$Revision: 1.1.1.1.2.7 $};
 $Chart::PNGgraph::prog_version = 
 	($Chart::PNGgraph::prog_rcs_rev =~ /\s+(\d*\.\d*)/) ? $1 : "0.0";
 
-$Chart::PNGgraph::VERSION = '1.12';
+$Chart::PNGgraph::VERSION = '1.13';
 
 # Some tools and utils
 use Chart::PNGgraph::colour qw(:colours);
@@ -203,11 +203,44 @@ my %Defaults = (
 	{
         my $self = shift;
 
+	if ( $self->{ttf_fontname} ) {
+	  &Error("Already specified a TrueType font for the title-- cannot use both GD and TrueType fonts.");
+	  return undef;
+	}
+
         $self->{tf} = shift;
         $self->set( 
 			tfw => $self->{tf}->width,
 			tfh => $self->{tf}->height,
 		);
+    }
+
+    sub set_title_TTF {
+      my $self = shift;
+      # This is a reference to a hash containing at least the fontname
+      # and size in points.
+      my $hash_ref = shift;
+
+      my (@bounds);
+
+      unless(defined($hash_ref->{fontname})) {
+	&Error("No font name given-- e.g. /usr/local/fonts/fontname.ttf");
+	return undef;
+      }
+      unless(defined($hash_ref->{size})) {
+	&Error("No font size given (in points)");
+	return undef;
+      }
+
+      $self->{ttf_fontname} = $hash_ref->{fontname};
+      $self->{ttf_size} = $hash_ref->{size};
+      $self->{ttf_angle} = $hash_ref->{angle} || 0;
+
+      # It would be nice to put it here, but that would require the
+      # user to set the title before the font.  Kinda wierd.
+#      @bounds = GD::Image->stringTTF($self->{tci}, $self->{ttf_fontname}, $self->{ttf_size}, $self->{ttf_angle}, 0, 0, $self->{title});
+
+      return 1;
     }
 
     sub set_text_clr # (colour name)
@@ -621,9 +654,30 @@ need to use L<GD>. At some point I'll rewrite this, so you can give this a
 number from 1 to 4, or a string like 'large' or 'small'. On the other
 hand, I might not, if Thomas Boutell decides to support more fonts.
 
+Do not use this if you have already specified a TrueType font (see below).
+
 Example:
 
     $my_graph->set_title_font(GD::gdTinyFont);
+
+=item set_title_TTF( I<{\%Font}> )
+
+Set the font to be used for the title using a TrueType font.  The %Font
+hash must contain the TrueType font name and point size.  It may optionally
+contain the angle (in radians) at which to display the font.
+
+If a font is chosen using set_title_TTF, set_title_font (above) cannot be
+used.
+
+Example:
+
+%Font = (
+         fontname => '/usr/local/fonts/myfont.ttf',
+         size => 12,
+         angle => 0,
+        );
+
+$my_graph->set_title_TTF( \%Font );
 
 =item plot( I<\@data> )
 

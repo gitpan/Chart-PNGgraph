@@ -1,3 +1,9 @@
+Thu October 21 1999 by sbonds@agora.rdrop.com
+- Chart::PNGgraph version 1.13
+- Added primitive support for TrueType fonts
+- Fixed bug where 3d charts with very large slices would not have both
+  parts of the front filled properly.
+
 Thu October 7 1999  by sbonds@agora.rdrop.com
 - Chart::PNGgraph version 1.12
 - Changed namespace to Chart:PNGgraph so that CPAN will index it properly

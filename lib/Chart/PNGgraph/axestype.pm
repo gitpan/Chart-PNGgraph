@@ -5,7 +5,7 @@
 #	Name:
 #		Chart::PNGgraph::axestype.pm
 #
-# $Id: axestype.pm,v 1.1.1.1.2.2 1999/10/07 21:04:01 sbonds Exp $
+# $Id: axestype.pm,v 1.1.1.1.2.5 1999/10/12 04:21:07 sbonds Exp $
 #
 #==========================================================================
 
@@ -412,14 +412,40 @@ my %Defaults = (
 		my $g = shift;
  
 		# Title
-		if ($s->{tfh}) 
+		if ($s->{ttf_fontname}) {
+		  # Using TrueType fonts
+		  my (@bounds);
+		  # Figure out how much space this thing is going to take.
+		  @bounds = GD::Image->stringTTF($s->{tci}, $s->{ttf_fontname}, $s->{ttf_size}, $s->{ttf_angle}, 0, 0, $s->{title});
+		  # @bounds[0,1]  Lower left corner (x,y)
+		  # @bounds[2,3]  Lower right corner (x,y)
+		  # @bounds[4,5]  Upper right corner (x,y)
+		  # @bounds[6,7]  Upper left corner (x,y)
+
+		  unless(defined($bounds[0])) {
+		    die "TrueType problem: $@";
+		    # Fall back to non-truetype text?
+		  }
+
+		  # Place the midpoint of the text in the middle of the
+		  # plottable area.  Hmmm... rotated text often falls off the
+		  # drawing area.
+		  my $lowest = ( $bounds[1] < $bounds[3] ) ? $bounds[1] : $bounds[3];
+		  my $highest = ( $bounds[5] > $bounds[7] ) ? $bounds[5] : $bounds[7];
+		  my $leftest = ( $bounds[0] < $bounds[6] ) ? $bounds[0] : $bounds[6];
+		  my $rightest = ( $bounds[2] > $bounds[4] ) ? $bounds[2] : $bounds[4];
+
+		  my $tx = $s->{left} + ($s->{right} - $s->{left})/2 - abs($leftest-$rightest)/2;		  
+		  my $ty = $s->{top} - $s->{text_space} + abs($highest-$lowest)/2;
+		  $g->stringTTF($s->{tci}, $s->{ttf_fontname}, $s->{ttf_size}, $s->{ttf_angle}, $tx, $ty, $s->{title});
+		}
+		elsif ($s->{tfh}) 
 		{
 			my $tx = 
-				$s->{left} + 
-				($s->{right} - $s->{left})/2 - 
-				length($s->{title}) * $s->{tfw}/2;
+			        $s->{left} + 
+			        ($s->{right} - $s->{left})/2 - 
+			        length($s->{title}) * $s->{tfw}/2;
 			my $ty = $s->{top} - $s->{text_space} - $s->{tfh};
-
 			$g->string($s->{tf}, $tx, $ty, $s->{title}, $s->{tci});
 		}
 
@@ -427,11 +453,10 @@ my %Defaults = (
 		if ($s->{xlfh}) 
 		{
 			my $tx = 
-				$s->{left} +
-				$s->{x_label_position} * ($s->{right} - $s->{left}) - 
-				$s->{x_label_position} * length($s->{x_label}) * $s->{xlfw};
+			        $s->{left} +
+			        $s->{x_label_position} * ($s->{right} - $s->{left}) - 
+			        $s->{x_label_position} * length($s->{x_label}) * $s->{xlfw};
 			my $ty = $s->{pngy} - $s->{xlfh} - $s->{b_margin};
-
 			$g->string($s->{xlf}, $tx, $ty, $s->{x_label}, $s->{lci});
 		}
 

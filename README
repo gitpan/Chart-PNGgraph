@@ -1,6 +1,6 @@
 *** THIS MODULE IS NOW DEPRECATED -- USE GD::Graph INSTEAD ***
 
-This is PNGgraph 1.20, a package to generate PNG charts, using Lincoln
+This is PNGgraph 1.21, a package to generate PNG charts, using Lincoln
 Stein's GD.pm.  It's a wrapper around GD::Graph, provided for backward
 compatibility with existing Chart::PNGgraph scripts only.
 

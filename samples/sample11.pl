@@ -1,5 +1,5 @@
 use Chart::PNGgraph::bars;
-use Chart::PNGgraph::colour;
+use GD::Graph::colour;
 
 print STDERR "Processing sample 1-1\n";
 

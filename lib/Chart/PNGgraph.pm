@@ -19,7 +19,7 @@
 #		Chart::PNGgraph::pie
 #		Chart::PNGgraph::mixed
 #
-# $Id: PNGgraph.pm,v 1.1.1.1.2.7.2.5 2000/04/05 02:45:37 sbonds Exp $
+# $Id: PNGgraph.pm,v 1.1.1.1.2.7.2.6 2000/04/09 00:13:18 sbonds Exp $
 #
 #==========================================================================
 
@@ -31,7 +31,7 @@ use Carp;
 use GD::Graph;
 use Chart::PNGgraph::Convert;
 
-$Chart::PNGgraph::VERSION = '1.20';
+$Chart::PNGgraph::VERSION = '1.21';
 @Chart::PNGgraph::ISA = qw(GD::Graph);
 
 # Old plot returned PNG data. GD::Graph::plot returns GD data

@@ -1,4 +1,6 @@
-Here's a quick list of features/changes I'd like to make.
+This is the original planned improvements to Chart::PNGgraph.  Given the
+move away from PNGgraph to GD::Graph, none of these will be implemented
+in PNGgraph.  Feel free to petition Martien to include them in GD::Graph.
 
   -- Steve Bonds
 

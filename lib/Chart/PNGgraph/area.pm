@@ -1,73 +1,25 @@
 #==========================================================================
-#			   Copyright (c) 1995-1998 Martien Verbruggen
+#			   Copyright (c) 1995-2000 Martien Verbruggen
 #--------------------------------------------------------------------------
 #
 #	Name:
 #		Chart::PNGgraph::area.pm
 #
-# $Id: area.pm,v 1.1.1.1.2.2 1999/10/07 21:04:01 sbonds Exp $
+# $Id: area.pm,v 1.1.1.1.2.2.2.1 2000/04/05 02:45:37 sbonds Exp $
 #
 #==========================================================================
 
 package Chart::PNGgraph::area;
- 
-use strict qw(vars refs subs);
+use strict;
+use Chart::PNGgraph;
+use GD::Graph::area;
+@Chart::PNGgraph::area::ISA = qw(GD::Graph::area Chart::PNGgraph);
 
-use Chart::PNGgraph::axestype;
+sub plot 
+{ 
+	my $self = shift;
+	my $gd   = $self->SUPER::plot(@_);
+	$self->_old_plot($gd);
+}
 
-@Chart::PNGgraph::area::ISA = qw( Chart::PNGgraph::axestype );
-
-{
-	# PRIVATE
-	sub draw_data_set($$$)  # GD::Image, \@data, $ds
-	{
-		my $s = shift;		# object reference
-		my $g = shift;		# gd object reference
-		my $d = shift;		# reference to data set
-		my $ds = shift;		# number of the data set
-
-		my $num = 0;
-
-		# Select a data colour
-		my $dsci = $s->set_clr( $g, $s->pick_data_clr($ds) );
-
-		# Create a new polygon
-		my $poly = new GD::Polygon();
-
-		# Add the first 'zero' point
-		my ($x, $y) = $s->val_to_pixel(1, 0, $ds);
-		$poly->addPt($x, $y);
-
-		# Add the data points
-		my $i;
-		for $i (0 .. $s->{numpoints}) 
-		{
-			next unless (defined $d->[$i]);
-
-			($x, $y) = $s->val_to_pixel($i + 1, $d->[$i], $ds);
-			$poly->addPt($x, $y);
-
-			$num = $i;
-		}
-
-		# Add the last zero point
-		($x, $y) = $s->val_to_pixel($num + 1, 0, $ds);
-		$poly->addPt($x, $y);
-
-		# Draw a filled and a line polygon
-		$g->filledPolygon($poly, $dsci);
-		$g->polygon($poly, $s->{acci});
-
-		# Draw the accent lines
-		for $i (1 .. ($s->{numpoints} - 1)) 
-		{
-			next unless (defined $d->[$i]);
-
-			($x, $y) = $s->val_to_pixel($i + 1, $d->[$i], $ds);
-			$g->dashedLine( $x, $y, $x, $s->{zeropoint}, $s->{acci} );
-	   }
-	}
-
-} # End of package Chart::PNGgraph::area
- 
 1;

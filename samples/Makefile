@@ -1,8 +1,8 @@
 PERL = perl
 .SUFFIXES: .png .pl
 .SILENT:
-LIB = ../lib
-OPTIONS = -Tw
+OPTIONS = -Tw -I../lib
+#OPTIONS = -Tw -I../lib -I/home/mgjv/perl/GD1.19
 
 PNGS =  sample11.png sample12.png sample13.png sample14.png \
 		sample15.png sample16.png \
@@ -16,13 +16,10 @@ PNGS =  sample11.png sample12.png sample13.png sample14.png \
 all: $(PNGS)
 
 .pl.png:
-	$(PERL) $(OPTIONS) -I$(LIB) $<
+	$(PERL) $(OPTIONS) $<
 
 clean:
 	rm -f $(PNGS)
-
-test:
-	$(PERL) $(OPTIONS) -I$(LIB) -M$(MODULE) sample91.pl
 
 # Dependencies
 
